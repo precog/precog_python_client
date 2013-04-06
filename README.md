@@ -13,11 +13,6 @@ be bugs. If you notice any, please open a ticket on the
 
 To install the library, run `python setup.py install`.
 
-*NOTE*: For now, please do not install the library. We're in the process of
-refactoring it and currently it will probably not install correctly. For now,
-you can rename `precog/__init__.py` to `precog.py` and copy it into your own
-projects.
-
 ### Testing the Client
 
 To test the client, first install [py.test](http://pytest.org/latest/getting-started.html#getstarted).
