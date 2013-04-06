@@ -1,35 +1,36 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
-import os
-
-from distribute_setup import use_setuptools
-use_setuptools()
-from setuptools import setup
-
-import precog
-
+from distutils.core import setup
 
 setup(
-    name = precog.__app_name__.lower(),
-    version = precog.__version__,
-
-    author = precog.__author__,
-    author_email = precog.__author_email__,
-    description = precog.__description__,
-    long_description = open(os.path.abspath(os.path.join(
-                            os.path.dirname(__file__), 'README.rst'))).read(),
-    url = precog.__url__,
-
-    keywords = 'precog reporting api',
+    name = "precog",
+    ##packages = ["precog"],
+    version = "0.2.0",
+    description = "Client for the Precog API",
+    author = 'Gabriel Claramunt',
+    author_email = 'gabriel@precog.com',
+    url = "http://precog.com",
     classifiers = [
+        "Programming Language :: Python :: 2.7",
         "Development Status :: 3 - Alpha",
         "Environment :: Web Environment",
         "Intended Audience :: Developers",
-        "License :: Free To Use But Restricted",
+        "License :: OSI Approved :: MIT",
         "Natural Language :: English",
         "Operating System :: OS Independent",
-        "Programming Language :: Python :: 2.7",
         "Topic :: Software Development :: Libraries :: Python Modules"
-    ],
+        ],
+    long_description = """\
+Sample Client for the Precog API
+--------------------------------
+
+This client implements some basic functionality to get you started using
+the Precog data science platform. It includes the ability to:
+
+ * Create an account ID
+ * Load data into the service
+ * Execute Quirrel queries
+ * Append more data to an existing path
+
+You are free to use this client directly, or to include any of its code in
+your own services and applications.
+"""
 )
