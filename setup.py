@@ -1,4 +1,28 @@
-from distutils.core import setup
+from distutils.core import setup, Command
+import os, pytest, shutil
+
+class SimpleCommand(Command):
+    user_options = []
+    def initialize_options(self): pass
+    def finalize_options(self): pass
+
+class TestCommand(SimpleCommand):
+    def run(self):
+        n = pytest.main(['-q'])
+        if n == 0:
+            print "test passed"
+        else:
+            print "test failed"
+
+class CleanCommand(SimpleCommand):
+    def run(self):
+        for path in ['build', 'dist', 'MANIFEST']:
+            if os.path.isdir(path):
+                print "+ cleaning %s" % path
+                shutil.rmtree(path)
+            elif os.path.exists(path):
+                print "+ cleaning %s" % path
+                os.remove(path)
 
 setup(
     name = "precog",
@@ -32,5 +56,6 @@ the Precog data science platform. It includes the ability to:
 
 You are free to use this client directly, or to include any of its code in
 your own services and applications.
-"""
+""",
+    cmdclass = {'test': TestCommand, 'clean': CleanCommand},
 )
