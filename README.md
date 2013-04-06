@@ -22,8 +22,16 @@ projects.
 
 To test the client, first install [py.test](http://pytest.org/latest/getting-started.html#getstarted).
 
-Next, run `py.test -q`. If you see a series of dots, everything is working. If
-you see a capital F or other output, then tests are failing.
+Run the tests using `python setup.py test`.
+
+To get more control over how the tests run, you can also run the tests using
+the `py.test` command, which supports a wide variety of options.
+
+### Packaging the Client
+
+To package the client, run `python setup.py sdist`. This will create a
+compressed file (.tar.gz) containing this file, the license and the source
+code. The file will be named something like `dist/precog-0.2.0.tar.gz`.
 
 ### License
 
