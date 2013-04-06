@@ -2,7 +2,7 @@ from distutils.core import setup
 
 setup(
     name = "precog",
-    ##packages = ["precog"],
+    packages = ["precog"],
     version = "0.2.0",
     description = "Client for the Precog API",
     author = 'Gabriel Claramunt',
