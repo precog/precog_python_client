@@ -1,110 +1,61 @@
 # This file is subject to the terms and conditions defined in LICENSE.
 # (c) 2011-2013, ReportGrid Inc. All rights reserved.
 
-import precog
-import time
-import pytest
-import base64
+from precog import Precog
+from pytest import config
+from base64 import urlsafe_b64encode
 
-def setup_module(module):
-    ROOT_API_KEY = pytest.config.getvalue('apiKey')
-    HOST = pytest.config.getvalue('host')
-    PORT = pytest.config.getvalue('port')
+def setup_module(m):
+    ROOTKEY = config.getvalue('apiKey')
+    HOST = config.getvalue('host')
+    PORT = config.getvalue('port')
 
-    print("Starting tests with the following settings: ")
-    print("""  host  = %s
-    port  = %d
-    token = %s""" % (HOST, PORT, ROOT_API_KEY))
+    m.TestPrecog.root = Precog(ROOTKEY, HOST, PORT)
 
-    module.TestPrecog.root_api = precog.Precog(ROOT_API_KEY, HOST, PORT)
+    account_id = m.TestPrecog.root.search_account("test-py@precog.com")
+    api_key = m.TestPrecog.root.describe_account("test-py@precog.com", "password", account_id)['apiKey']
 
-    response = module.TestPrecog.root_api.create_account("test-py@precog.com","password")
-    module.TestPrecog.account_id=response['accountId']
-    response =module.TestPrecog.root_api.describe_account("test-py@precog.com","password",module.TestPrecog.account_id)
-    module.TestPrecog.api_key=response['apiKey']
-    module.TestPrecog.api = precog.Precog(module.TestPrecog.api_key, HOST, PORT)
-    
-    # response = module.TestPrecog.root_api.new_token(path='/python_test')
+    m.TestPrecog.api = Precog(api_key, HOST, PORT)
+    m.TestPrecog.account_id = account_id
+    m.TestPrecog.api_key = api_key
 
-    # assert len(response) == len (ROOT_API_KEY)
-
-    # module.TestPrecog.test_token_id = response
-    # module.TestPrecog.test_api = precog.Precog(module.TestPrecog.test_token_id, HOST, PORT)
-
-    # # Wait to allow the token to propagate
-    # time.sleep(1)
-
-    # module.TestPrecog.test_api.track(
-    #     path='/',
-    #     name='pytest',
-    #     properties={'pyprop': 123},
-    #     rollup=False)
-
-    # module.TestPrecog.test_api.track(
-    #     path='/py-client',
-    #     name='pytest',
-    #     properties={'pyprop': 456},
-    #     rollup=True)
-
-    # Wait to allow the events to propagate
-    #time.sleep(1)
-
-
-def teardown_module(module):
+def teardown_module(m):
     pass
-    # module.TestPrecog.root_api.delete_token(token_id=module.TestPrecog.test_token_id)
-    # # Wait to allow the deletion to propagage
-    # time.sleep(1)
-    # assert module.TestPrecog.test_token_id not in module.TestPrecog.root_api.tokens()
 
-class TestPrecog: 
+class TestPrecog:
     def test_ingest_csv(self):
-        data = "blah\n\n"
-        response = self.api.ingest(self.account_id, data, "csv")
+        data = "blah\n1\n2\n3\n"
+        response = self.api.ingestcsv(self.account_id, data)
         assert response.get('errors') == []
-        assert response.get('ingested') == 1
-
+        assert response.get('ingested') == 3
+    
     def test_ingest_json(self):
-        data = '{"a": "foo", "b": {"nested": true}, "c": [1,2,3], "d": 4}'
-        response = self.api.ingest(self.account_id, data, "json")
+        data = {"a": "foo", "b": {"nested": True}, "c": [1,2,3], "d": 4}
+        response = self.api.ingestjson(self.account_id, data)
         assert response.get('errors') == []
         assert response.get('ingested') == 1
     
     def test_ingest_with_owner_id(self):
-        data = '{"a": "foo", "b": {"nested": true}, "c": [1,2,3], "d": 4}'
-        options = {"ownerAccountId": self.account_id}
-        response = self.api.ingest(self.account_id, data, "json", options)
+        data = {"a": "foo", "b": {"nested": True}, "c": [1,2,3], "d": 4}
+        response = self.api.ingestjson(self.account_id, data, ownerid=self.account_id)
         assert response.get('errors') == []
         assert response.get('ingested') == 1
-
-    def test_ingest_async(self):
-        response = self.api.ingest(self.account_id, "[1,2,3,4]", "json", {'async': True})
+    
+    def test_ingest_sync(self):
+        response = self.api.ingestjson(self.account_id, [1,2,3,4], async=False)
         assert response.get('errors') == []
         assert response.get('ingested') == 1
-
+    
     def test_store(self):
         response = self.api.store(self.account_id, {"animal" : 'bear'})
         assert response.get('ingested') == 1
-
-    #def test_query(self):
-    #    #just test the query was sent and executed sucessfully
-    #    response=self.api.query(self.account_id, "count(//%s) " % (self.account_id))
-    #    assert 0==response[0]
-    #
-    ## def test_query(self):
-    ##     #just test the query was sent and executed sucessfully
-    ##     response=self.api.query(self.account_id, "count(//"+self.account_id+")")
-    ##     #assert_equal Array, response.class
-    ##     assert 0 == response[0]
-    #
-    ## def test_token(self):
-    ##     response = self.root_api.token(self.test_token_id)
-    ##     assert type(response) is dict
-    ##     assert 'tokenId' in response
-    ##     assert response['tokenId'] == self.test_token_id
-    #
+    
+    def test_query(self):
+        response = self.api.query(self.account_id, "count(//nonexistent)")
+        assert response == [0]
+    
     ## def test_tokens(self):
-    ##     response = self.root_api.tokens()
+    ##     response = self.root.tokens()
     ##     assert type(response) is list
     ##     assert self.test_token_id in response
     #
@@ -174,10 +125,6 @@ class TestPrecog:
     ##     #assert type(response[precog.Periodicity.Eternity]) is list
     ##     #assert len(response[precog.Periodicity.Eternity]) > 0
     #
-    #def test_from_heroku(self):
-    #    api=precog.Precog.from_heroku("user:password:beta.host.com:12345:AAAAA-BBBBB-CCCCCC-DDDDD:/00001234/")
-    #    assert type(api) is Precog
-    #
     #def test_from_token(self):
     #    token=base64.urlsafe_b64encode("user1:password1:beta.host.com:12345:AAAAA-BBBBB-CCCCCC-DDDDD:/00001234/")
     #    values=precog.from_token(token)
@@ -191,6 +138,3 @@ class TestPrecog:
     #def test_to_token(self):
     #    token=precog.to_token("user","password","beta.host.com","12345","AAAAA-BBBBB-CCCCCC-DDDDD","/00001234/")
     #    assert token == base64.urlsafe_b64encode("user:password:beta.host.com:12345:AAAAA-BBBBB-CCCCCC-DDDDD:/00001234/")
-
-
-
