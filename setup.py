@@ -10,9 +10,9 @@ class TestCommand(SimpleCommand):
     def run(self):
         n = pytest.main(['-q'])
         if n == 0:
-            print "test passed"
+            print "tests passed"
         else:
-            print "test failed"
+            print "tests failed"
 
 class CleanCommand(SimpleCommand):
     def run(self):
