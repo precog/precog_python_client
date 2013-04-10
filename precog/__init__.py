@@ -120,7 +120,7 @@ class Precog(object):
         except HttpResponseError, e:
             return None
 
-    def describe_account(self, email, password, accountId):
+    def account_details(self, email, password, accountId):
         """Return details about an account.
 
         The resulting dictionary will contain information about the
@@ -129,36 +129,44 @@ class Precog(object):
         d = self.api.auth(email, password)
         return self.api.get('/accounts/v1/accounts/%s' % accountId, headers=d)
 
-    def ingestjson(self, path, data, async=False, ownerid=None):
-        return self.ingestraw(path, 'json', json.dumps(data), async, ownerid)
+    ingestmodes = ['sync', 'async', 'streaming']
 
-    def ingestcsv(self, path, data, async=False, ownerid=None):
-        return self.ingestraw(path, 'csv', data, async, ownerid)
+    def ingestjson(self, path, data, mode='sync', ownerid=None):
+        return self.ingestraw(path, 'json', json.dumps(data), mode, ownerid)
 
-    def ingestraw(self, path, type_, bytes, async=False, ownerid=None):
+    def ingestcsv(self, path, data, mode='sync', ownerid=None):
+        return self.ingestraw(path, 'csv', data, mode, ownerid)
+
+    def ingestraw(self, path, type_, bytes, mode='sync', ownerid=None):
         """Ingests csv or json data at the specified path"""
         if not bytes:
             raise PrecogError("no bytes to ingest")
 
         type_ = self.ingest_aliases.get(type_, type_)
-
         if type_ not in self.ingest_types:
             raise PrecogError("invalid ingest type %r" % type_)
 
-        sync = 'async' if async else 'sync'
-        path = '/ingest/v1/%s/fs/%s' % (sync, path)
-
         params = {'apiKey': self.api.apikey, 'type': type_}
+
         if ownerid is not None:
             params['ownerAccountId'] = ownerid
+
+        if mode == 'streaming':
+            params['mode'] = 'streaming'
+        elif mode == 'async':
+            params['mode'] = 'batch'
+            params['receipt'] = False
+        elif mode == 'sync':
+            params['mode'] = 'batch'
+            params['receipt'] = True
+        else:
+            raise PrecogError("invalid mode %r" % mode)
+
+        path = '/ingest/v1/fs/%s' % path
 
         headers = {'Content-Type': type_}
 
         return self.api.post(path, bytes, params=params, headers=headers)
-
-    def store(self, path, event, opts={}):
-        """Store a record at the specified path"""
-        return self.ingestjson(path, json.dumps(event), "json", opts)
 
     def delete(self, path):
         return self.api.delete('/ingest/v1/sync/fs/%s' % path)

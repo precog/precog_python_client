@@ -13,7 +13,7 @@ def setup_module(m):
     m.TestPrecog.root = Precog(ROOTKEY, HOST, PORT)
 
     account_id = m.TestPrecog.root.search_account("test-py@precog.com")
-    api_key = m.TestPrecog.root.describe_account("test-py@precog.com", "password", account_id)['apiKey']
+    api_key = m.TestPrecog.root.account_details("test-py@precog.com", "password", account_id)['apiKey']
 
     m.TestPrecog.api = Precog(api_key, HOST, PORT)
     m.TestPrecog.account_id = account_id

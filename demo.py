@@ -15,7 +15,7 @@ accountid = root.search_account("test-py@precog.com")
 assert(accountid is not None)
 print 'account found: ok'
 
-d = root.describe_account("test-py@precog.com", "password", accountid)
+d = root.account_details("test-py@precog.com", "password", accountid)
 assert(d['email'] == "test-py@precog.com")
 assert(d['accountId'] == accountid)
 apikey = d['apiKey']
@@ -41,14 +41,10 @@ assert response.get('errors') == []
 assert response.get('ingested') == 1
 print 'json with owner ok'
 
-response = api.ingestjson(accountid, [1,2,3,4], async=True)
-assert response.get('errors') == []
-assert response.get('ingested') == 1
+response = api.ingestjson(accountid, [1,2,3,4], mode='async')
+print response
+assert 'ingestId' in response and len(response) == 1
 print 'async json ok'
-
-response = api.store(accountid, {"animal" : 'bear'})
-assert response.get('ingested') == 1
-print 'store ok'
 
 response = api.query(accountid, "count(//nonexistent)")
 assert response == [0]
