@@ -36,11 +36,6 @@ assert response.get('errors') == []
 assert response.get('ingested') == 1
 print 'json ok'
 
-response = api.ingestjson(accountid, jsondata, ownerid=accountid)
-assert response.get('errors') == []
-assert response.get('ingested') == 1
-print 'json with owner ok'
-
 response = api.ingestjson(accountid, [1,2,3,4], mode='async')
 print response
 assert 'ingestId' in response and len(response) == 1
