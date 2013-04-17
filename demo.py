@@ -1,131 +1,85 @@
 # This file is subject to the terms and conditions defined in LICENSE.
 # (c) 2011-2013, ReportGrid Inc. All rights reserved.
 
-from precog import Precog
+import time
+from precog import *
 
 host = "devapi.precog.com"
 port = 443
 rootkey = 'A3BC1539-E8A9-4207-BB41-3036EC2C6E6D'
-root = Precog(rootkey, host, port)
+root = Precog(rootkey, None, None, host=host, port=port)
 
-assert(root.search_account("does-not-exist-23455@precog.com") is None)
+assert root.search_account("does-not-exist-23455@precog.com") == []
 print 'search not found: ok'
 
-accountid = root.search_account("test-py@precog.com")
-assert(accountid is not None)
+accountid = root.search_account("test-py@precog.com")[0]['accountId']
+assert accountid is not None
 print 'account found: ok'
 
 d = root.account_details("test-py@precog.com", "password", accountid)
-assert(d['email'] == "test-py@precog.com")
-assert(d['accountId'] == accountid)
+assert d['email'] == "test-py@precog.com", d
+assert d['accountId'] == accountid, d
 apikey = d['apiKey']
-api = Precog(apikey, host, port)
+api = Precog(apikey, accountid, accountid, host=host, port=port)
 print 'api: ok'
 
 # csv
 csvdata = "foo,bar,qux\n1,2,3\n4,5,6\n"
-response = api.ingestcsv(accountid, csvdata)
-assert response.get('errors') == []
-assert response.get('ingested') == 2
-print 'csv: ok'
+response = api.append_all_from_string('foo', Format.csv, csvdata)
+assert response.get('errors') == [], response
+assert response.get('ingested') == 2, response
+print 'append_all_from_string(csv): ok'
 
 # json
 jsondata = {"a": "foo", "b": {"nested": True}, "c": [1,2,3], "d": 4}
-response = api.ingestjson(accountid, jsondata)
-assert response.get('errors') == []
-assert response.get('ingested') == 1
-print 'json ok'
+response = api.append_all("foo", jsondata)
+assert response.get('errors') == [], response
+assert response.get('ingested') == 1, response
+print 'append_all: ok'
 
-response = api.ingestjson(accountid, [1,2,3,4], mode='async')
-print response
-assert 'ingestId' in response and len(response) == 1
-print 'async json ok'
+response = api.append("bar", [1,2,3,4])
+assert response.get('ingested') == 1, response
+print 'append: ok'
 
-response = api.query(accountid, "count(//nonexistent)")
-assert response == [0]
-print 'null count ok'
+response = api.query("qux", "count(//nonexistent)")
+assert response == [0], response
+print 'empty count: ok'
 
-## def test_tokens(self):
-##     response = self.root.tokens()
-##     assert type(response) is list
-##     assert self.test_token_id in response
-#
-## def test_children(self):
-##     response = self.test_api.children(path='/')
-##     assert type(response) is list
-##     assert '.pytest' in response
-#
-## def test_children_with_type_path(self):
-##     response = self.test_api.children(path='/', type='path')
-##     assert type(response) is list
-##     assert u'py-client' in response
-#
-## def test_children_with_type_property(self):
-##     response = self.test_api.children(path='/', type='property')
-##     assert type(response) is list
-##     assert '.pytest' in response
-#
-## def test_children_with_property(self):
-##     response = self.test_api.children(path='/', property='pytest')
-##     assert type(response) is list
-##     assert '.pyprop' in response
-#
-## def test_property_count(self):
-##     response = self.test_api.property_count(path='/', property='pytest')
-##     assert type(response) is int
-##     assert response > 0
-#
-## def test_property_series(self):
-##     response = self.test_api.property_series(path='/', property='pytest')
-##     assert type(response) is list
-##     #assert precog.Periodicity.Eternity in response
-##     #assert type(response[precog.Periodicity.Eternity]) is list
-##     #assert len(response[precog.Periodicity.Eternity]) > 0
-#
-## def test_property_values(self):
-##     response = self.test_api.property_values(path='/', property='pytest.pyprop')
-##     assert type(response) is list
-##     assert 123 in response
-#
-## def test_property_value_count(self):
-##     response = self.test_api.property_value_count(path='/', property='pytest.pyprop', value=123)
-##     assert type(response) is int
-##     assert response > 0
-#
-## def test_rollup_property_value_count(self):
-##     response = self.test_api.property_value_count(path='/', property='pytest.pyprop', value=456)
-##     assert type(response) is int
-##     assert response > 0
-#
-## def test_property_value_series(self):
-##     response = self.test_api.property_value_series(path='/', property='pytest.pyprop', value=123)
-##     assert type(response) is list
-##     #assert precog.Periodicity.Eternity in response
-##     #assert type(response[precog.Periodicity.Eternity]) is list
-##     #assert len(response[precog.Periodicity.Eternity]) > 0
-#
-## def test_search_count(self):
-##     response = self.test_api.search_count(path='/', where=[{"variable":".pytest.pyprop", "value":123}])
-##     assert type(response) is int
-##     assert response > 0
-#
-## def test_search_series(self):
-##     response = self.test_api.search_series(path='/', where=[{"variable":".pytest.pyprop", "value":123}])
-##     assert type(response) is list
-##     #assert precog.Periodicity.Eternity in response
-##     #assert type(response[precog.Periodicity.Eternity]) is list
-##     #assert len(response[precog.Periodicity.Eternity]) > 0
-#
-#def test_from_token(self):
-#    token=base64.urlsafe_b64encode("user1:password1:beta.host.com:12345:AAAAA-BBBBB-CCCCCC-DDDDD:/00001234/")
-#    values=precog.from_token(token)
-#    assert values['user']=="user1"
-#    assert values['pwd']=="password1"
-#    assert values['host']=="beta.host.com"
-#    assert values['accountid']=="12345"
-#    assert values['api_key']=="AAAAA-BBBBB-CCCCCC-DDDDD"
-#    assert values['root_path']=="/00001234/"
-#
-#def test_to_token(self):
-#    token=precog.to_token("user","password","beta.host.com","12345","AAAAA-BBBBB-CCCCCC-DDDDD","/00001234/")
-#    assert token == base64.urlsafe_b64encode("user:password:beta.host.com:12345:AAAAA-BBBBB-CCCCCC-DDDDD:/00001234/")
+response = api.query("qux", "count(//nonexistent)", detailed=True)
+assert response == {'serverErrors': [], 'errors': [], 'data': [0], 'warnings': []}, response
+print 'detailed empty count: ok'
+
+def queryUntil(bp, q, expected, timeout=30):
+    t0 = time.time()
+    res = None
+    while time.time() - t0 < timeout:
+        print "  trying..."
+        res = api.query(bp, q)
+        if res == expected:
+            return
+        time.sleep(0.5)
+    assert res == expected, res
+
+api.delete("qux/test")
+queryUntil("qux", "count(//test)", [0])
+print "delete qux/test: ok"
+
+objs = []
+for i in range(0, 100): objs.append({"i": i, "j": i % 13, "k": "foo"})
+response = api.append_all("qux/test", objs)
+assert response['ingested'] == 100, response
+print "populate qux/test: ok"
+
+queryUntil("qux", "count(//test)", [100])
+print "count qux/test: ok"
+
+newer = []
+for i in range(0, 60):
+    newer.append({"iii": i, "newer": True})
+s = json.dumps(newer)
+response = api.upload_string("qux/test", Format.json, s)
+assert response['ingested'] == 60, response
+print "upload new qux/test: ok"
+
+queryUntil("qux", "count(//test)", [60])
+print "count qux/test again: ok"
