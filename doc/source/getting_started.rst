@@ -114,10 +114,10 @@ Appending Data
 The previous commands will upload an entire file to a path, replacing
 whatever is already there. But in many cases you might want to append
 extra data without removing what was already there. In these cases
-you'll want the family of append functions: `append`, `append_all`,
-`append_all_from_file`, and `append_all_from_string`.
+you'll want the family of append functions: :meth:`~precog.Precog.append`, :meth:`~precog.Precog.append_all`,
+:meth:`~precog.Precog.append_all_from_file`, and :meth:`~precog.Precog.append_all_from_string`.
 
-You can add events one at a time as Python objects using `append`::
+You can add events one at a time as Python objects using :meth:`~precog.Precog.append`::
 
         song = {"song": "Meeting of the Spirits",
                 "artist": "Mahavishnu Orchestra",
@@ -126,7 +126,7 @@ You can add events one at a time as Python objects using `append`::
                 "duration": 412}
         client.append('mysongs', song)
 
-This can also be done in bulk using `append_all` and an array::
+This can also be done in bulk using :meth:`~precog.Precog.append_all` and an array::
 
         songs = [
             {"song": "Moonshake",
@@ -144,14 +144,14 @@ This can also be done in bulk using `append_all` and an array::
         ]
         client.append_all('mysongs', songs)
 
-Be careful! If you were to call :meth:`~precog.Precog.append` instead of `append_all` with
+Be careful! If you were to call :meth:`~precog.Precog.append` instead of :meth:`~precog.Precog.append_all` with
 an array, the method would succeed but you would have imported the
 array a single event containing multiple objects, instead of multiple
 events.
 
 If your data is stored in a string or file you can call
-`append_all_from_string` or `append_all_from_file` which are somewhat
-similar to `upload_file`.
+:meth:`~precog.Precog.append_all_from_string` or :meth:`~precog.Precog.append_all_from_file` which are somewhat
+similar to :meth:`~precog.Precog.upload_file`.
 
 .. code-block:: python
 
@@ -186,7 +186,7 @@ an array containing a number, not just a number.
 
 Quirrel results will be translated into standard Python objects,
 strings, numbers, and so on. If there is an error with the query we'll
-get a `PrecogError` exception. There may be additional output if there
+get a :class:`~precog.PrecogError` exception. There may be additional output if there
 were (non-fatal) warnings sent back.
 
 In some cases we don't want exception, but want more details about the
