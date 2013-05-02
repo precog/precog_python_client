@@ -64,7 +64,7 @@ class TestEverything:
         
     def test_query2(self):
         response = self.api.query("count(//nonexistent)", "qux", detailed=True)
-        assert response == {'serverErrors': [], 'errors': [], 'data': [0], 'warnings': []}, response
+        assert response == {'serverWarnings': [], 'serverErrors': [], 'errors': [], 'data': [0], 'warnings': []}, response
         print 'detailed empty count: ok'
 
     def test_populate1(self):
