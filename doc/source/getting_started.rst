@@ -1,8 +1,6 @@
 Getting Started
 ***************
 
-## Quick Start
-
 If you already have a Precog account, the first thing you'll want to do is to
 create a client object::
 
@@ -18,9 +16,11 @@ create a client object::
 Next we'll want to load some data into Precog. Here are four different methods
 for adding equivalent data.
 
-### Uploading Files
+Uploading Files
+===============
 
-#### Comma Separated Values
+Comma Separated Values
+----------------------
 
 Imagine that we have the following data in a file called `songs.csv`::
 
@@ -61,7 +61,8 @@ The data could be ingested using::
 
         client.upload_file(foo, Format.makecsv(delim='|'), "pipe-separated.csv")
 
-#### Javascript Object Notation
+Javascript Object Notation
+--------------------------
 
 Any data stored in CSV can be converted to JSON instead. While the CSV
 reprsentation is often more compact, it can only represent flat
@@ -105,7 +106,8 @@ the path `mysongs`::
 
         client.upload_file('mysongs', Format.csv, 'songs.csv')
 
-### Appending Data
+Appending Data
+==============
 
 The previous commands will upload an entire file to a path, replacing
 whatever is already there. But in many cases you might want to append
@@ -140,7 +142,7 @@ This can also be done in bulk using `append_all` and an array::
         ]
         client.append_all('mysongs', songs)
 
-Be careful! If you were to call `append` instead of `append_all` with
+Be careful! If you were to call :meth:`precog.Precog.append` instead of `append_all` with
 an array, the method would succeed but you would have imported the
 array a single event containing multiple objects, instead of multiple
 events.
@@ -161,7 +163,8 @@ similar to `upload_file`.
         s = open('extra.json', 'r').read()
         client.append_all_from_string('mysongs', Format.json, s)
 
-### Running Queries
+Running Queries
+===============
 
 Now that we've loaded all our songs in `mysongs`, we can learn things
 about our music collection. The following Python snippet runs a
@@ -203,7 +206,8 @@ those. In this case the query executed successfully and the `data`
 parameter contains our result (the number of seconds in our music
 library).
 
-### License
+License
+=======
 
 The client code is available to you under the MIT license.
 
