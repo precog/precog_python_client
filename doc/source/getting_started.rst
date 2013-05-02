@@ -47,12 +47,12 @@ By default CSV files are delimited by commas (`,`), use double-quotes
 (`"`) to surround data that may contain commas, and escape
 double-quotes using an extra double quote (`""`). It's possible to
 read other formats. For instance, to read tab-separated values use
-`Format.tsv` and to read semi-colon-separeated values use
-`Format.ssv`.
+:const:`precog.Format.tsv` and to read semi-colon-separeated values use
+:const:`precog.Format.ssv`.
 
 You can also choose a custom delimiter, or custom-escaping, via the
-`Format.makecsv()` function. Given a pipe-separeted file called
-`foo.csv`::
+:meth:`~precog.Format.makecsv` function of the :class:`~precog.Format` class. Given a pipe-separeted
+file called `foo.csv`::
 
         name|age
         anne|36
