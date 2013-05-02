@@ -13,21 +13,8 @@ Contents:
 
    getting_started.rst
 
-.. autoclass:: precog.Precog
+.. automodule:: precog
    :members:
-   :undoc-members:
-
-.. autoclass:: precog.PrecogError
-   :members:
-   :undoc-members:
-
-.. autoclass:: precog.HttpResponseError
-   :members:
-   :undoc-members:
-
-.. autoclass:: precog.Format
-   :members:
-   :undoc-members:
 
 Indices and tables
 ==================
