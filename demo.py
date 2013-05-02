@@ -49,7 +49,7 @@ assert response == [0], response
 print 'empty count: ok'
 
 response = api.query("count(//nonexistent)", "qux", detailed=True)
-assert response == {'serverErrors': [], 'errors': [], 'data': [0], 'warnings': []}, response
+assert response == {'serverWarnings': [], 'serverErrors': [], 'errors': [], 'data': [0], 'warnings': []}, response
 print 'detailed empty count: ok'
 
 def queryUntil(bp, q, expected, timeout=30):
