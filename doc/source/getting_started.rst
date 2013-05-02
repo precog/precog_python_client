@@ -142,7 +142,7 @@ This can also be done in bulk using `append_all` and an array::
         ]
         client.append_all('mysongs', songs)
 
-Be careful! If you were to call :meth:`precog.Precog.append` instead of `append_all` with
+Be careful! If you were to call :meth:`~precog.Precog.append` instead of `append_all` with
 an array, the method would succeed but you would have imported the
 array a single event containing multiple objects, instead of multiple
 events.
@@ -151,7 +151,8 @@ If your data is stored in a string or file you can call
 `append_all_from_string` or `append_all_from_file` which are somewhat
 similar to `upload_file`.
 
-::
+.. code-block:: python
+
         # this adds the data from extrasongs.json
         with open('extra.json', 'r') as f:
             client.append_all_from_file('mysongs', Format.json, f)
