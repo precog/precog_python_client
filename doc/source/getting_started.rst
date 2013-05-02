@@ -1,6 +1,8 @@
 Getting Started
 ***************
 
+.. highlight:: python
+
 If you already have a Precog account, the first thing you'll want to do is to
 create a client object::
 
