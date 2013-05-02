@@ -186,7 +186,7 @@ an array containing a number, not just a number.
 
 Quirrel results will be translated into standard Python objects,
 strings, numbers, and so on. If there is an error with the query we'll
-get a :class:`~precog.PrecogError` exception. There may be additional output if there
+get a :exc:`~precog.PrecogError` exception. There may be additional output if there
 were (non-fatal) warnings sent back.
 
 In some cases we don't want exception, but want more details about the
