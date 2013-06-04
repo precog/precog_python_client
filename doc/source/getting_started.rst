@@ -106,7 +106,7 @@ Here's a JSON representation of the previous data for the file
 Using the previous snippet, the following code would load that into
 the path `mysongs`::
 
-        client.upload_file('mysongs', Format.csv, 'songs.csv')
+        client.upload_file('mysongs', Format.json, 'songs.json')
 
 Appending Data
 ==============
