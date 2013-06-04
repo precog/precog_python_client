@@ -153,7 +153,8 @@ Arguments:
  * password (str): The password for the new account.
         """
         body = json.dumps({"email": email, "password": password})
-        return self._post('/accounts/v1/accounts/', body=body)
+        headers = { 'Content-Type': Format.json["mime"] }
+        return self._post('/accounts/v1/accounts/', body=body, headers=headers)
 
     def search_account(self, email):
         """
