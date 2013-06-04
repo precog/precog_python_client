@@ -9,7 +9,7 @@ import datetime
 import sys
 
 from httplib import HTTPSConnection, HTTPConnection
-from urllib import urlencode, quote_plus
+from urllib import urlencode, quote_plus, pathname2url
 from base64 import urlsafe_b64encode, urlsafe_b64decode, standard_b64encode
 
 __app_name__     = 'precog'
@@ -113,7 +113,7 @@ Keyword Arguments:
         return self._doit('DELETE', self._connect(), path, body, params, headers, void=True)
 
     def _doit(self, name, conn, path, body, params, headers, void=False):
-        path = "%s?%s" % (path, urlencode(params.items()))
+        path = "%s?%s" % (pathname2url(path), urlencode(params.items()))
 
         # Send request and get response
         conn.request(name, path, body, headers)
@@ -144,7 +144,7 @@ Keyword Arguments:
     def create_account(self, email, password):
         """
 Create a new account.
-    
+
 Given an email address and password, this method will create a
 new account, and return the account ID.
 
@@ -211,7 +211,7 @@ Arguments:
         """
 Given a file and a format, append all the data from the file to the destination
 path. The ``format`` should be one of those provided by the ``precog.Format``
-class (e.g. ``Format.json``). 
+class (e.g. ``Format.json``).
 
 Arguments:
  * dest (str): Precog path to append the object to.
@@ -297,7 +297,7 @@ Arguments:
     def query(self, query, path="", detailed=False):
         """
 Evaluate a query.
-        
+
 Run a Quirrel query against specified base path, and return the resulting set.
 
 Arguments:
